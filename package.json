@@ -1,0 +1,17 @@
+{
+  "name": "flappy-plane",
+  "version": "1.0.0",
+  "author": "Łukasz Kupiński",
+  "description": "Flappy plane game (flappy bird)",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=0.10.26"
+  },
+  "dependencies": {
+    "express": "4.1.1",
+    "compression": "1.0.2"
+  }
+}
