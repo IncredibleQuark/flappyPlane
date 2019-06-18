@@ -1,11 +1,13 @@
+// let _ = require('lodash');
+
 const canvasSize = {
     canvasWidth: 800,
     canvasHeight: 400,
 };
 const foregroundHeight = canvasSize.canvasHeight / 10;
 let gravity = 1;
-let velocity = 1;
-let horizontalGap = Math.round(canvasSize.canvasWidth / 5);
+let velocity = 4;
+
 let verticalGap = Math.round(canvasSize.canvasHeight / 5);
 const planePosition = {
     x: Math.round(canvasSize.canvasWidth / 70),
@@ -21,17 +23,36 @@ hook.appendChild(canvas);
 const ctx = canvas.getContext('2d');
 
 // setInterval(() => {
-//     velocity += 0.5;
+//     velocity += 1;
+//     // gravity += 1;
 //     horizontalGap -= 50;
 // }, 10000);
 moveUp = () => {
-    planePosition.y -= 40;
+    planePosition.y -= 30;
+    // for(let i =0; i < 10; i++) {
+    //     planePosition.y -= 1;
+    //     requestAnimationFrame(moveUp)
+    // }
 };
 document.addEventListener('keyup', (key) => {
     if (key.keyCode === 32) {
         moveUp();
     }
 });
+
+const randomProperty = (obj) => {
+    const copy = _.cloneDeep(obj);
+    const keys = Object.keys(copy);
+    return copy[keys[ keys.length * Math.random() << 0]];
+};
+const randomHeight = () => {
+    return Math.floor(Math.random() * (canvasSize.canvasHeight / 2 - canvasSize.canvasHeight / 10)) + canvasSize.canvasHeight / 10;
+};
+
+const generateHorizontalGap = () => {
+    //change gap between obstacles randomly
+    return Math.floor(Math.floor(Math.random() * (canvasSize.canvasWidth - 10 + velocity)) / velocity) * velocity;
+};
 
 loadImages = () => {
     const background = new Image();
@@ -74,33 +95,33 @@ loadImages = () => {
             hanoi: {
                 src: hanoi,
                 ratio: 0.5,
-                height: 200
+                height: randomHeight()
             },
-            // jesus: {
-            //     src: jesus,
-            //     ratio: 1,
-            //     height: Math.floor(Math.random() * (500 - 100)) + 100,
-            // },
-            // piza: {
-            //     src: piza,
-            //     ratio: 1,
-            //     height: Math.floor(Math.random() * (500 - 100)) + 100,
-            // },
-            // budda: {
-            //     src: budda,
-            //     ratio: 1,
-            //     height: Math.floor(Math.random() * (500 - 100)) + 100,
-            // },
-            // bigben: {
-            //     src: bigben,
-            //     ratio: 0.5,
-            //     height: Math.floor(Math.random() * (500 - 100)) + 100,
-            // },
-            // eifel: {
-            //     src: eifel,
-            //     ratio: 1,
-            //     height: Math.floor(Math.random() * (500 - 100)) + 100,
-            // }
+            jesus: {
+                src: jesus,
+                ratio: 1,
+                height: randomHeight(),
+            },
+            piza: {
+                src: piza,
+                ratio: 0.8,
+                height: randomHeight(),
+            },
+            budda: {
+                src: budda,
+                ratio: 1,
+                height: randomHeight(),
+            },
+            bigben: {
+                src: bigben,
+                ratio: 0.3,
+                height: randomHeight(),
+            },
+            eifel: {
+                src: eifel,
+                ratio: 0.5,
+                height: randomHeight(),
+            }
         },
         topObstacles: {
 
@@ -110,44 +131,44 @@ loadImages = () => {
 
 const images = loadImages();
 
-const randomProperty = (obj) => {
-    const keys = Object.keys(obj);
-    return obj[keys[ keys.length * Math.random() << 0]];
-};
 let obstacles = [];
-
+let horizontalGap = generateHorizontalGap();
 const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
-console.log(randomInitBottomObstacle);
 obstacles.push({
-    x: canvas.width,
-    y: randomInitBottomObstacle.height - foregroundHeight,
+    x: canvasSize.canvasWidth,
+    y: canvasSize.canvasHeight - randomInitBottomObstacle.height - foregroundHeight,
     image: randomInitBottomObstacle
 });
+
 
 draw = () => {
 
     ctx.drawImage(images.misc.background, 0, 0);
+    // ctx.fillStyle  = '#22243b';
+    // ctx.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
     ctx.drawImage(images.misc.foreground, 0, canvasSize.canvasHeight - foregroundHeight, canvasSize.canvasWidth, foregroundHeight);
     ctx.drawImage(images.misc.plane, planePosition.x, planePosition.y, 50, 30);
-
 
     for (let i = 0; i < obstacles.length; i++) {
         ctx.drawImage(obstacles[i].image.src, obstacles[i].x, obstacles[i].y, obstacles[i].image.height * obstacles[i].image.ratio, obstacles[i].image.height);
         obstacles[i].x -= velocity;
 
-        if (obstacles[i].x === 500) {
-            const tallInitHeight = 200;
+
+        if (obstacles[obstacles.length - 1].x === horizontalGap) {
+            const tallInitHeight = randomHeight();
             const drawnObstacle = randomProperty(images.bottomObstacles);
-            console.log(tallInitHeight);
+
+            horizontalGap = generateHorizontalGap();
+
             drawnObstacle.height = tallInitHeight;
             obstacles.push({
-                x: canvas.width,
-                y: tallInitHeight - foregroundHeight,
+                x: canvasSize.canvasWidth,
+                y: canvasSize.canvasHeight - tallInitHeight - foregroundHeight,
                 image: drawnObstacle
             })
         }
 
-        if (obstacles[i].x < -400) {
+        if (obstacles[i].x < -500) {
             obstacles.shift();
         }
     }
