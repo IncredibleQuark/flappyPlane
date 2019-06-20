@@ -8,9 +8,20 @@ let velocity = 4;
 let gameStarted = false;
 let points = 0;
 
-const planePosition = {
-    x: Math.round(canvasSize.canvasWidth / 70),
-    y: Math.round(canvasSize.canvasHeight / 3),
+const planePosition = {};
+resetPlanePosition = () => {
+    planePosition.x = Math.round(canvasSize.canvasWidth / 70);
+    planePosition.y = Math.round(canvasSize.canvasHeight / 3);
+};
+
+const planeSize = {
+    width: canvasSize.canvasWidth * 0.12,
+    height: canvasSize.canvasHeight * 0.08
+};
+
+const fontSize = {
+    small: Math.round(canvasSize.canvasHeight / canvasSize.canvasWidth * 20),
+    med: Math.round(canvasSize.canvasHeight / canvasSize.canvasWidth * 40)
 };
 
 const hook = document.getElementById('game-div');
@@ -139,7 +150,7 @@ document.addEventListener('keyup', (key) => {
     }
 });
 initGameStartInfo = () => {
-    ctx.font = "10px 'Press Start 2P'";
+    ctx.font = `${fontSize.small}px 'Press Start 2P'`;
     ctx.fillStyle = 'red';
     ctx.fillText("Press space or tap to start", canvasSize.canvasWidth * 0.35, canvasSize.canvasHeight / 2 + canvasSize.canvasHeight * 0.1);
 };
@@ -149,18 +160,21 @@ addStartListener = () => {
 };
 
 startGame = (key) => {
-    document.removeEventListener('keyup', startGame, false);
+
     if (key.keyCode === 32) {
             clearObstacles();
+            resetPlanePosition();
             gameStarted = true;
             points = 0;
     }
+    document.removeEventListener('keyup', startGame, false);
 };
 
 gameOver = () => {
-    ctx.font = "30px 'Press Start 2P'";
+    ctx.font = `${fontSize.med}px 'Press Start 2P'`;
     ctx.fillStyle = 'red';
-    ctx.fillText("Game Over", canvasSize.canvasWidth * 0.35, canvasSize.canvasHeight / 2);
+    ctx.fillText("Game Over", canvasSize.canvasWidth * 0.40, canvasSize.canvasHeight / 2);
+    initGameStartInfo();
     gameStarted = false;
 };
 
@@ -170,8 +184,8 @@ draw = () => {
     // ctx.fillStyle  = '#22243b';
     // ctx.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
     ctx.drawImage(images.misc.foreground, 0, canvasSize.canvasHeight - foregroundHeight, canvasSize.canvasWidth, foregroundHeight);
-    ctx.drawImage(images.misc.plane, planePosition.x, planePosition.y, 50, 30);
-    ctx.font = "10px 'Press Start 2P'";
+    ctx.drawImage(images.misc.plane, planePosition.x, planePosition.y, planeSize.width, planeSize.height);
+    ctx.font = `${fontSize.small} 'Press Start 2P'`;
     ctx.fillStyle = 'black';
     ctx.fillText(`Distance: ${points} km`, canvasSize.canvasWidth * 0.75, canvasSize.canvasHeight * 0.05);
 
@@ -201,10 +215,10 @@ draw = () => {
             }
 
             //loose condition
-            if (obstacles[i].x === 500) {
+            const planeHitBottom = planePosition.y >= canvasSize.canvasHeight - foregroundHeight - planeSize.height;
+            const planeHitTop = planePosition.y <= 0;
+            if (planeHitBottom || planeHitTop) {
                 gameOver();
-
-                return
             }
         }
 
