@@ -1,5 +1,3 @@
-// let _ = require('lodash');
-
 const canvasSize = {
     canvasWidth: 800,
     canvasHeight: 400,
@@ -7,8 +5,9 @@ const canvasSize = {
 const foregroundHeight = canvasSize.canvasHeight / 10;
 let gravity = 1;
 let velocity = 4;
+let gameStarted = false;
+let points = 0;
 
-let verticalGap = Math.round(canvasSize.canvasHeight / 5);
 const planePosition = {
     x: Math.round(canvasSize.canvasWidth / 70),
     y: Math.round(canvasSize.canvasHeight / 3),
@@ -27,23 +26,12 @@ const ctx = canvas.getContext('2d');
 //     // gravity += 1;
 //     horizontalGap -= 50;
 // }, 10000);
-moveUp = () => {
-    planePosition.y -= 30;
-    // for(let i =0; i < 10; i++) {
-    //     planePosition.y -= 1;
-    //     requestAnimationFrame(moveUp)
-    // }
-};
-document.addEventListener('keyup', (key) => {
-    if (key.keyCode === 32) {
-        moveUp();
-    }
-});
+
 
 const randomProperty = (obj) => {
     const copy = _.cloneDeep(obj);
     const keys = Object.keys(copy);
-    return copy[keys[ keys.length * Math.random() << 0]];
+    return copy[keys[keys.length * Math.random() << 0]];
 };
 const randomHeight = () => {
     return Math.floor(Math.random() * (canvasSize.canvasHeight / 2 - canvasSize.canvasHeight / 10)) + canvasSize.canvasHeight / 10;
@@ -123,23 +111,58 @@ loadImages = () => {
                 height: randomHeight(),
             }
         },
-        topObstacles: {
-
-        }
+        topObstacles: {}
     }
 };
 
 const images = loadImages();
-
 let obstacles = [];
 let horizontalGap = generateHorizontalGap();
-const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
-obstacles.push({
-    x: canvasSize.canvasWidth,
-    y: canvasSize.canvasHeight - randomInitBottomObstacle.height - foregroundHeight,
-    image: randomInitBottomObstacle
-});
 
+clearObstacles = () => {
+    obstacles = [];
+    const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
+    obstacles.push({
+        x: canvasSize.canvasWidth,
+        y: canvasSize.canvasHeight - randomInitBottomObstacle.height - foregroundHeight,
+        image: randomInitBottomObstacle
+    });
+};
+
+moveUp = () => {
+    planePosition.y -= 30;
+};
+
+document.addEventListener('keyup', (key) => {
+    if (key.keyCode === 32) {
+        moveUp();
+    }
+});
+initGameStartInfo = () => {
+    ctx.font = "10px 'Press Start 2P'";
+    ctx.fillStyle = 'red';
+    ctx.fillText("Press space or tap to start", canvasSize.canvasWidth * 0.35, canvasSize.canvasHeight / 2 + canvasSize.canvasHeight * 0.1);
+};
+
+addStartListener = () => {
+    document.addEventListener('keyup', startGame, false);
+};
+
+startGame = (key) => {
+    document.removeEventListener('keyup', startGame, false);
+    if (key.keyCode === 32) {
+            clearObstacles();
+            gameStarted = true;
+            points = 0;
+    }
+};
+
+gameOver = () => {
+    ctx.font = "30px 'Press Start 2P'";
+    ctx.fillStyle = 'red';
+    ctx.fillText("Game Over", canvasSize.canvasWidth * 0.35, canvasSize.canvasHeight / 2);
+    gameStarted = false;
+};
 
 draw = () => {
 
@@ -148,33 +171,52 @@ draw = () => {
     // ctx.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
     ctx.drawImage(images.misc.foreground, 0, canvasSize.canvasHeight - foregroundHeight, canvasSize.canvasWidth, foregroundHeight);
     ctx.drawImage(images.misc.plane, planePosition.x, planePosition.y, 50, 30);
+    ctx.font = "10px 'Press Start 2P'";
+    ctx.fillStyle = 'black';
+    ctx.fillText(`Distance: ${points} km`, canvasSize.canvasWidth * 0.75, canvasSize.canvasHeight * 0.05);
 
-    for (let i = 0; i < obstacles.length; i++) {
-        ctx.drawImage(obstacles[i].image.src, obstacles[i].x, obstacles[i].y, obstacles[i].image.height * obstacles[i].image.ratio, obstacles[i].image.height);
-        obstacles[i].x -= velocity;
+    if (gameStarted) {
+        for (let i = 0; i < obstacles.length; i++) {
+            ctx.drawImage(obstacles[i].image.src, obstacles[i].x, obstacles[i].y, obstacles[i].image.height * obstacles[i].image.ratio, obstacles[i].image.height);
+            obstacles[i].x -= velocity;
 
 
-        if (obstacles[obstacles.length - 1].x === horizontalGap) {
-            const tallInitHeight = randomHeight();
-            const drawnObstacle = randomProperty(images.bottomObstacles);
+            if (obstacles[obstacles.length - 1].x === horizontalGap) {
+                const tallInitHeight = randomHeight();
+                const drawnObstacle = randomProperty(images.bottomObstacles);
 
-            horizontalGap = generateHorizontalGap();
+                horizontalGap = generateHorizontalGap();
 
-            drawnObstacle.height = tallInitHeight;
-            obstacles.push({
-                x: canvasSize.canvasWidth,
-                y: canvasSize.canvasHeight - tallInitHeight - foregroundHeight,
-                image: drawnObstacle
-            })
+                drawnObstacle.height = tallInitHeight;
+                obstacles.push({
+                    x: canvasSize.canvasWidth,
+                    y: canvasSize.canvasHeight - tallInitHeight - foregroundHeight,
+                    image: drawnObstacle
+                })
+            }
+
+            // delete old obstacles
+            if (obstacles[i].x < -500) {
+                obstacles.shift();
+            }
+
+            //loose condition
+            if (obstacles[i].x === 500) {
+                gameOver();
+
+                return
+            }
         }
 
-        if (obstacles[i].x < -500) {
-            obstacles.shift();
+        planePosition.y += gravity;
+        points += 1;
+    } else {
+        initGameStartInfo();
+        addStartListener();
+        if (points > 0) {
+            gameOver();
         }
     }
-
-    planePosition.y += gravity;
-
     requestAnimationFrame(draw);
 
 };
