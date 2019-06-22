@@ -279,6 +279,7 @@ addStartListener = () => {
 };
 
 startGame = (event) => {
+    event.preventDefault();
     if (event.keyCode === 32 || event.type === "touchstart") {
         obstacles = [];
         const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
