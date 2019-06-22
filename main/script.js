@@ -1,6 +1,6 @@
 const canvasSize = {
     canvasWidth: window.innerWidth < 800 ? window.innerWidth : 800,
-    canvasHeight: window.innerHeight < 600 ? window.innerHeight : 400,
+    canvasHeight: window.innerHeight < 600 ? window.innerHeight - window.innerHeight / 10: 400,
 };
 
 const foregroundHeight = canvasSize.canvasHeight / 10;
@@ -310,7 +310,7 @@ draw = () => {
 
     ctx.font = `${fontSize.small} 'Press Start 2P'`;
     ctx.fillStyle = 'black';
-    ctx.fillText(`Distance: ${distance} km`, canvasSize.canvasWidth * 0.75, canvasSize.canvasHeight * 0.05);
+    ctx.fillText(`Distance: ${distance} km`, canvasSize.canvasWidth * 0.50, canvasSize.canvasHeight * 0.05);
 
     if (gameStarted) {
         for (let i = 0; i < obstacles.length; i++) {
