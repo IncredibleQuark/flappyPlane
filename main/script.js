@@ -4,7 +4,7 @@ const canvasSize = {
 };
 const foregroundHeight = canvasSize.canvasHeight / 10;
 let gravity = 1;
-let velocity = 4;
+let velocity = 5;
 let gameStarted = false;
 let distance = 0;
 
@@ -101,36 +101,42 @@ loadImages = () => {
                 ratio: 0.5,
                 height: randomHeight(),
                 name: "hanoi",
+                type: "bottom"
             },
             jesus: {
                 src: jesus,
                 ratio: 1,
                 height: randomHeight(),
                 name: "jesus",
+                type: "bottom"
             },
             piza: {
                 src: piza,
                 ratio: 0.8,
                 height: randomHeight(),
                 name: "piza",
+                type: "bottom"
             },
             budda: {
                 src: budda,
                 ratio: 1,
                 height: randomHeight(),
                 name: "budda",
+                type: "bottom"
             },
             bigben: {
                 src: bigben,
                 ratio: 0.3,
                 height: randomHeight(),
                 name: "bigben",
+                type: "bottom"
             },
             eifel: {
                 src: eifel,
                 ratio: 0.5,
                 height: randomHeight(),
                 name: "eifel",
+                type: "bottom"
             }
         },
         topObstacles: {
@@ -138,19 +144,22 @@ loadImages = () => {
                 src: plane2,
                 ratio: 2,
                 height: planeSize.height,
-                name: "plane2"
+                name: "plane2",
+                type: "top"
             },
             plane3: {
                 src: plane3,
                 ratio: 2,
                 height: planeSize.height,
                 name: "plane3",
+                type: "top"
             },
             helicopter: {
                 src: helicopter,
                 ratio: 1,
                 height: planeSize.height,
-                name: "helicopter"
+                name: "helicopter",
+                type: "top"
             },
         }
     }
@@ -172,15 +181,14 @@ clearObstacles = () => {
     obstacles = [];
     const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
     obstacles.push({
-        x: canvasSize.canvasWidth,
+        x: generateTopObstacleXPosition(),
         y: canvasSize.canvasHeight - randomInitBottomObstacle.height - foregroundHeight,
         image: randomInitBottomObstacle
     });
     const randomInitTopObstacle = randomProperty(images.topObstacles);
     const topObstacleYPosition = generateTopObstacleYPosition(randomInitBottomObstacle.height);
     const topObstacleXPosition = generateTopObstacleXPosition();
-    console.log(topObstacleXPosition);
-    console.log(canvasSize.canvasWidth);
+
     obstacles.push({
         x: topObstacleXPosition,
         y: topObstacleYPosition,
@@ -244,7 +252,12 @@ draw = () => {
             obstacles[i].x -= velocity;
 
 
-            if (obstacles[obstacles.length - 1].x === horizontalGap) {
+            const bottomObstacles = obstacles.filter( (obs) => {
+                return obs.image.type === "bottom";
+            });
+            const lastBottomObstacle = bottomObstacles[bottomObstacles.length - 1];
+
+            if (lastBottomObstacle.x <= horizontalGap + velocity && lastBottomObstacle.x >= horizontalGap - velocity) {
                 const tallInitHeight = randomHeight();
                 const drawnBottomObstacle = randomProperty(images.bottomObstacles);
 
@@ -274,8 +287,12 @@ draw = () => {
             //loose condition
             const hitBottom = planePosition.y + planeSize.height >= canvasSize.canvasHeight - foregroundHeight;
             const hitTop = planePosition.y <= 0;
-            const hitObstacle = (planePosition.x + planeSize.width >= obstacles[i].x) && (planePosition.y + planeSize.height >= canvasSize.canvasHeight - (obstacles[i].image.height + foregroundHeight));
-            if (hitBottom || hitTop || hitObstacle) {
+            const hitBottomObstacle =
+                (obstacles[i].image.type === "bottom") &&
+                (planePosition.x + planeSize.width >= obstacles[i].x) &&
+                (planePosition.x <= obstacles[i].x + obstacles[i].image.height * obstacles[i].image.ratio) &&
+                (planePosition.y + planeSize.height >= canvasSize.canvasHeight - (obstacles[i].image.height + foregroundHeight));
+            if (hitBottom || hitTop || hitBottomObstacle) {
                 gameOver();
             }
         }
