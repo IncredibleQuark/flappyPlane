@@ -18,7 +18,6 @@ const planeSize = {
     width: canvasSize.canvasWidth * 0.12,
     height: canvasSize.canvasHeight * 0.08
 };
-
 const fontSize = {
     small: Math.round(canvasSize.canvasHeight / canvasSize.canvasWidth * 20),
     med: Math.round(canvasSize.canvasHeight / canvasSize.canvasWidth * 40)
@@ -82,7 +81,13 @@ loadImages = () => {
     piza.src = '/assets/images/bottom/tall/piza.png';
 
     const helicopter = new Image;
-    helicopter.src = '/assets/images/helicopter.png';
+    helicopter.src = '/assets/images/top/helicopter.png';
+
+    const plane2 = new Image();
+    plane2.src = '/assets/images/top/plane2.png';
+
+    const plane3 = new Image();
+    plane3.src = '/assets/images/top/plane3.png';
 
     return {
         misc: {
@@ -128,13 +133,40 @@ loadImages = () => {
                 name: "eifel",
             }
         },
-        topObstacles: {}
+        topObstacles: {
+            plane2: {
+                src: plane2,
+                ratio: 2,
+                height: planeSize.height,
+                name: "plane2"
+            },
+            plane3: {
+                src: plane3,
+                ratio: 2,
+                height: planeSize.height,
+                name: "plane3",
+            },
+            helicopter: {
+                src: helicopter,
+                ratio: 1,
+                height: planeSize.height,
+                name: "helicopter"
+            },
+        }
     }
 };
 
 const images = loadImages();
 let obstacles = [];
 let horizontalGap = generateHorizontalGap();
+
+generateTopObstacleYPosition = (bottomObstacleHeight) => {
+  return Math.round(Math.random() * (canvasSize.canvasHeight - bottomObstacleHeight - foregroundHeight));
+};
+
+generateTopObstacleXPosition = () => {
+    return Math.round(Math.random() * ((canvasSize.canvasWidth) - (canvasSize.canvasWidth - canvasSize.canvasWidth / 10) ) + canvasSize.canvasWidth - canvasSize.canvasWidth / 10);
+};
 
 clearObstacles = () => {
     obstacles = [];
@@ -144,6 +176,16 @@ clearObstacles = () => {
         y: canvasSize.canvasHeight - randomInitBottomObstacle.height - foregroundHeight,
         image: randomInitBottomObstacle
     });
+    const randomInitTopObstacle = randomProperty(images.topObstacles);
+    const topObstacleYPosition = generateTopObstacleYPosition(randomInitBottomObstacle.height);
+    const topObstacleXPosition = generateTopObstacleXPosition();
+    console.log(topObstacleXPosition);
+    console.log(canvasSize.canvasWidth);
+    obstacles.push({
+        x: topObstacleXPosition,
+        y: topObstacleYPosition,
+        image: randomInitTopObstacle
+    })
 };
 
 moveUp = () => {
@@ -155,6 +197,7 @@ document.addEventListener('keyup', (key) => {
         moveUp();
     }
 });
+
 initGameStartInfo = () => {
     ctx.font = `${fontSize.small}px 'Press Start 2P'`;
     ctx.fillStyle = 'red';
@@ -203,27 +246,35 @@ draw = () => {
 
             if (obstacles[obstacles.length - 1].x === horizontalGap) {
                 const tallInitHeight = randomHeight();
-                const drawnObstacle = randomProperty(images.bottomObstacles);
+                const drawnBottomObstacle = randomProperty(images.bottomObstacles);
 
                 horizontalGap = generateHorizontalGap();
 
-                drawnObstacle.height = tallInitHeight;
+                drawnBottomObstacle.height = tallInitHeight;
                 obstacles.push({
                     x: canvasSize.canvasWidth,
                     y: canvasSize.canvasHeight - tallInitHeight - foregroundHeight,
-                    image: drawnObstacle
-                })
+                    image: drawnBottomObstacle
+                });
+
+                const drawnTopObstacle= randomProperty(images.topObstacles);
+                const topObstacleYPosition = generateTopObstacleYPosition(drawnBottomObstacle.height);
+                obstacles.push({
+                    x: generateTopObstacleXPosition(),
+                    y: topObstacleYPosition,
+                    image: drawnTopObstacle
+                });
             }
 
             // delete old obstacles
-            if (obstacles[i].x < -100) {
+            if (obstacles[i].x < -500) {
                 obstacles.shift();
             }
 
-            const hitObstacle = (planePosition.x + planeSize.width >= obstacles[i].x) && (planePosition.y + planeSize.height >= canvasSize.canvasHeight - (obstacles[i].image.height + foregroundHeight));
             //loose condition
             const hitBottom = planePosition.y + planeSize.height >= canvasSize.canvasHeight - foregroundHeight;
             const hitTop = planePosition.y <= 0;
+            const hitObstacle = (planePosition.x + planeSize.width >= obstacles[i].x) && (planePosition.y + planeSize.height >= canvasSize.canvasHeight - (obstacles[i].image.height + foregroundHeight));
             if (hitBottom || hitTop || hitObstacle) {
                 gameOver();
             }
