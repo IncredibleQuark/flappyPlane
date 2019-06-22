@@ -65,22 +65,40 @@ loadImages = () => {
     foreground.src = '/assets/images/background.png';
 
     const hanoi = new Image();
-    hanoi.src = '/assets/images/bottom/tall/hanoi.png';
+    hanoi.src = '/assets/images/bottom/hanoi.png';
 
     const eifel = new Image();
-    eifel.src = '/assets/images/bottom/tall/eifel.png';
+    eifel.src = '/assets/images/bottom/eifel.png';
 
     const budda = new Image();
-    budda.src = '/assets/images/bottom/tall/budda.png';
+    budda.src = '/assets/images/bottom/budda.png';
 
     const bigben = new Image();
-    bigben.src = '/assets/images/bottom/tall/bigben.png';
+    bigben.src = '/assets/images/bottom/bigben.png';
 
     const jesus = new Image();
-    jesus.src = '/assets/images/bottom/tall/jesus.png';
+    jesus.src = '/assets/images/bottom/jesus.png';
 
     const piza = new Image();
-    piza.src = '/assets/images/bottom/tall/piza.png';
+    piza.src = '/assets/images/bottom/piza.png';
+
+    const liberty = new Image();
+    liberty.src = '/assets/images/bottom/liberty.png';
+
+    const coloseum = new Image();
+    coloseum.src = '/assets/images/bottom/coloseum.png';
+
+    const moscow = new Image();
+    moscow.src = '/assets/images/bottom/moscow.png';
+
+    const sphinx = new Image();
+    sphinx.src = '/assets/images/bottom/sphinx.png';
+
+    const sydney = new Image();
+    sydney.src = '/assets/images/bottom/sydney.png';
+
+    const tajmahal = new Image();
+    tajmahal.src = '/assets/images/bottom/tajmahal.png';
 
     const helicopter = new Image;
     helicopter.src = '/assets/images/top/helicopter.png';
@@ -102,42 +120,72 @@ loadImages = () => {
                 src: hanoi,
                 ratio: 0.5,
                 height: randomHeight(),
-                name: "hanoi",
                 type: "bottom"
             },
             jesus: {
                 src: jesus,
                 ratio: 1,
                 height: randomHeight(),
-                name: "jesus",
                 type: "bottom"
             },
             piza: {
                 src: piza,
                 ratio: 0.8,
                 height: randomHeight(),
-                name: "piza",
                 type: "bottom"
             },
             budda: {
                 src: budda,
                 ratio: 1,
                 height: randomHeight(),
-                name: "budda",
                 type: "bottom"
             },
             bigben: {
                 src: bigben,
                 ratio: 0.3,
                 height: randomHeight(),
-                name: "bigben",
                 type: "bottom"
             },
             eifel: {
                 src: eifel,
                 ratio: 0.5,
                 height: randomHeight(),
-                name: "eifel",
+                type: "bottom"
+            },
+            liberty: {
+                src: liberty,
+                ratio: 0.5,
+                height: randomHeight(),
+                type: "bottom"
+            },
+            coloseum: {
+                src: coloseum,
+                ratio: 1.5,
+                height: randomHeight(),
+                type: "bottom"
+            },
+            moscow: {
+                src: moscow,
+                ratio: 1,
+                height: randomHeight(),
+                type: "bottom"
+            },
+            sphinx: {
+                src: sphinx,
+                ratio: 1.2,
+                height: randomHeight(),
+                type: "bottom"
+            },
+            sydney: {
+                src: sydney,
+                ratio: 1.5,
+                height: randomHeight(),
+                type: "bottom"
+            },
+            tajmahal: {
+                src: tajmahal,
+                ratio: 1.2,
+                height: randomHeight(),
                 type: "bottom"
             }
         },
@@ -146,21 +194,18 @@ loadImages = () => {
                 src: plane2,
                 ratio: 2,
                 height: planeSize.height,
-                name: "plane2",
                 type: "top"
             },
             plane3: {
                 src: plane3,
                 ratio: 2,
                 height: planeSize.height,
-                name: "plane3",
                 type: "top"
             },
             helicopter: {
                 src: helicopter,
-                ratio: 1,
+                ratio: 1.2,
                 height: planeSize.height,
-                name: "helicopter",
                 type: "top"
             },
         }
