@@ -9,6 +9,13 @@ const initialVelocity = 4;
 let velocity = initialVelocity;
 let gameStarted = false;
 let distance = 0;
+let audio = new Audio('/assets/music.mp3');
+audio.oncanplaythrough = () => {
+    audio.play();
+};
+audio.addEventListener('ended', () => {
+    audio.play();
+});
 
 const planePosition = {};
 resetPlanePosition = () => {
@@ -17,7 +24,7 @@ resetPlanePosition = () => {
 };
 
 const planeSize = {
-    width: canvasSize.canvasWidth * 0.12,
+    width: canvasSize.canvasWidth * 0.08,
     height: canvasSize.canvasHeight * 0.08
 };
 const fontSize = {
@@ -56,13 +63,13 @@ const generateHorizontalGap = () => {
 
 loadImages = () => {
     const background = new Image();
-    background.src = `/assets/images/background2.png`;
+    background.src = `/assets/images/background.png`;
 
     const plane = new Image();
     plane.src = '/assets/images/plane.png';
 
     const foreground = new Image();
-    foreground.src = '/assets/images/background.png';
+    foreground.src = '/assets/images/foreground.png';
 
     const hanoi = new Image();
     hanoi.src = '/assets/images/bottom/hanoi.png';
@@ -254,7 +261,7 @@ document.addEventListener('keyup', (key) => {
 
 initGameStartInfo = () => {
     ctx.font = `${fontSize.small}px 'Press Start 2P'`;
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = 'black';
     ctx.fillText("Press space or tap to start", canvasSize.canvasWidth * 0.35, canvasSize.canvasHeight / 2 + canvasSize.canvasHeight * 0.1);
 };
 
@@ -278,7 +285,7 @@ startGame = (key) => {
 
 gameOver = () => {
     ctx.font = `${fontSize.med}px 'Press Start 2P'`;
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = 'black';
     ctx.fillText("Game Over", canvasSize.canvasWidth * 0.40, canvasSize.canvasHeight / 2);
     initGameStartInfo();
     gameStarted = false;
@@ -286,7 +293,7 @@ gameOver = () => {
 
 draw = () => {
 
-    ctx.drawImage(images.misc.background, 0, 0);
+    ctx.drawImage(images.misc.background, 0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
     // ctx.fillStyle  = '#22243b';
     // ctx.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
     ctx.drawImage(images.misc.foreground, 0, canvasSize.canvasHeight - foregroundHeight, canvasSize.canvasWidth, foregroundHeight);

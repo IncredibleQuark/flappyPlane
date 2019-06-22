@@ -1,3 +1,7 @@
 canvas {
     /*background: gray;*/
 }
+
+html, body {
+    background-color: #22243b;
+}
