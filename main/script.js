@@ -6,7 +6,7 @@ const foregroundHeight = canvasSize.canvasHeight / 10;
 let gravity = 1;
 let velocity = 4;
 let gameStarted = false;
-let points = 0;
+let distance = 0;
 
 const planePosition = {};
 resetPlanePosition = () => {
@@ -94,32 +94,38 @@ loadImages = () => {
             hanoi: {
                 src: hanoi,
                 ratio: 0.5,
-                height: randomHeight()
+                height: randomHeight(),
+                name: "hanoi",
             },
             jesus: {
                 src: jesus,
                 ratio: 1,
                 height: randomHeight(),
+                name: "jesus",
             },
             piza: {
                 src: piza,
                 ratio: 0.8,
                 height: randomHeight(),
+                name: "piza",
             },
             budda: {
                 src: budda,
                 ratio: 1,
                 height: randomHeight(),
+                name: "budda",
             },
             bigben: {
                 src: bigben,
                 ratio: 0.3,
                 height: randomHeight(),
+                name: "bigben",
             },
             eifel: {
                 src: eifel,
                 ratio: 0.5,
                 height: randomHeight(),
+                name: "eifel",
             }
         },
         topObstacles: {}
@@ -165,7 +171,7 @@ startGame = (key) => {
             clearObstacles();
             resetPlanePosition();
             gameStarted = true;
-            points = 0;
+            distance = 0;
     }
     document.removeEventListener('keyup', startGame, false);
 };
@@ -187,7 +193,7 @@ draw = () => {
     ctx.drawImage(images.misc.plane, planePosition.x, planePosition.y, planeSize.width, planeSize.height);
     ctx.font = `${fontSize.small} 'Press Start 2P'`;
     ctx.fillStyle = 'black';
-    ctx.fillText(`Distance: ${points} km`, canvasSize.canvasWidth * 0.75, canvasSize.canvasHeight * 0.05);
+    ctx.fillText(`Distance: ${distance} km`, canvasSize.canvasWidth * 0.75, canvasSize.canvasHeight * 0.05);
 
     if (gameStarted) {
         for (let i = 0; i < obstacles.length; i++) {
@@ -210,24 +216,25 @@ draw = () => {
             }
 
             // delete old obstacles
-            if (obstacles[i].x < -500) {
+            if (obstacles[i].x < -100) {
                 obstacles.shift();
             }
 
+            const hitObstacle = (planePosition.x + planeSize.width >= obstacles[i].x) && (planePosition.y + planeSize.height >= canvasSize.canvasHeight - (obstacles[i].image.height + foregroundHeight));
             //loose condition
-            const planeHitBottom = planePosition.y >= canvasSize.canvasHeight - foregroundHeight - planeSize.height;
-            const planeHitTop = planePosition.y <= 0;
-            if (planeHitBottom || planeHitTop) {
+            const hitBottom = planePosition.y + planeSize.height >= canvasSize.canvasHeight - foregroundHeight;
+            const hitTop = planePosition.y <= 0;
+            if (hitBottom || hitTop || hitObstacle) {
                 gameOver();
             }
         }
 
         planePosition.y += gravity;
-        points += 1;
+        distance += 1;
     } else {
         initGameStartInfo();
         addStartListener();
-        if (points > 0) {
+        if (distance > 0) {
             gameOver();
         }
     }
