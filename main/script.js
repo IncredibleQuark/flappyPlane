@@ -73,7 +73,7 @@ loadImages = () => {
     plane.src = '/assets/images/plane.png';
 
     const foreground = new Image();
-    foreground.src = '/assets/images/foreground.png';
+    foreground.src = '/assets/images/foreground.jpeg';
 
     const hanoi = new Image();
     hanoi.src = '/assets/images/bottom/hanoi.png';
