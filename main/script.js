@@ -14,11 +14,11 @@ let gameStarted = false;
 let distance = 0;
 
 let audio = new Audio('/assets/music.mp3');
-audio.oncanplaythrough = () => {
-    audio.play();
-};
+audio.addEventListener("canplay", () => {
+    audio.play().catch( (err) => {console.warn(err)});
+});
 audio.addEventListener('ended', () => {
-    audio.play();
+    audio.play().catch( (err) => {console.warn(err)});
 });
 
 const planePosition = {};
@@ -289,6 +289,9 @@ startGame = (event) => {
         distance = 0;
         velocity = initialVelocity;
         gravity = initialGravity;
+        if (audio.paused) {
+            audio.play().catch( (err) => {console.warn(err)});
+        }
     }
     canvas.removeEventListener('touchstart', startGame, false);
     document.removeEventListener('keyup', startGame, false);
