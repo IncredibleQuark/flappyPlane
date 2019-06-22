@@ -278,12 +278,18 @@ draw = () => {
             //loose condition
             const hitBottom = planePosition.y + planeSize.height >= canvasSize.canvasHeight - foregroundHeight;
             const hitTop = planePosition.y <= 0;
+            const hitTopObstacle = (obstacles[i].image.type === "top") &&
+                planePosition.x + planeSize.width >= obstacles[i].x &&
+                planePosition.y >= obstacles[i].y &&
+                planePosition.y <= obstacles[i].y + obstacles[i].image.height &&
+                planePosition.y + planeSize.height >= obstacles[i].y &&
+                planePosition.x <= obstacles[i].x + obstacles[i].image.height * obstacles[i].image.ratio;
             const hitBottomObstacle =
                 (obstacles[i].image.type === "bottom") &&
                 (planePosition.x + planeSize.width >= obstacles[i].x) &&
                 (planePosition.x <= obstacles[i].x + obstacles[i].image.height * obstacles[i].image.ratio) &&
                 (planePosition.y + planeSize.height >= canvasSize.canvasHeight - (obstacles[i].image.height + foregroundHeight));
-            if (hitBottom || hitTop || hitBottomObstacle) {
+            if (hitBottom || hitTop || hitBottomObstacle || hitTopObstacle) {
                 gameOver();
             }
         }
