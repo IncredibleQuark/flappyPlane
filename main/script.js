@@ -2,13 +2,17 @@ const canvasSize = {
     canvasWidth: 800,
     canvasHeight: 400,
 };
+
 const foregroundHeight = canvasSize.canvasHeight / 10;
+
 const initialGravity = 1;
 let gravity = initialGravity;
 const initialVelocity = 4;
 let velocity = initialVelocity;
+
 let gameStarted = false;
 let distance = 0;
+
 let audio = new Audio('/assets/music.mp3');
 audio.oncanplaythrough = () => {
     audio.play();
@@ -259,6 +263,10 @@ document.addEventListener('keyup', (key) => {
     }
 });
 
+canvas.addEventListener('touchstart', () => {
+    moveUp();
+});
+
 initGameStartInfo = () => {
     ctx.font = `${fontSize.small}px 'Press Start 2P'`;
     ctx.fillStyle = 'black';
@@ -267,10 +275,11 @@ initGameStartInfo = () => {
 
 addStartListener = () => {
     document.addEventListener('keyup', startGame, false);
+    canvas.addEventListener('touchstart', startGame, false);
 };
 
-startGame = (key) => {
-    if (key.keyCode === 32) {
+startGame = (event) => {
+    if (event.keyCode === 32 || event.type === "touchstart") {
         obstacles = [];
         const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
         updateObstacles(randomInitBottomObstacle);
@@ -280,6 +289,7 @@ startGame = (key) => {
         velocity = initialVelocity;
         gravity = initialGravity;
     }
+    canvas.removeEventListener('touchstart', startGame, false);
     document.removeEventListener('keyup', startGame, false);
 };
 
@@ -294,10 +304,9 @@ gameOver = () => {
 draw = () => {
 
     ctx.drawImage(images.misc.background, 0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
-    // ctx.fillStyle  = '#22243b';
-    // ctx.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
     ctx.drawImage(images.misc.foreground, 0, canvasSize.canvasHeight - foregroundHeight, canvasSize.canvasWidth, foregroundHeight);
     ctx.drawImage(images.misc.plane, planePosition.x, planePosition.y, planeSize.width, planeSize.height);
+
     ctx.font = `${fontSize.small} 'Press Start 2P'`;
     ctx.fillStyle = 'black';
     ctx.fillText(`Distance: ${distance} km`, canvasSize.canvasWidth * 0.75, canvasSize.canvasHeight * 0.05);
@@ -319,6 +328,7 @@ draw = () => {
                 drawnBottomObstacle.height = tallInitHeight;
 
                 horizontalGap = generateHorizontalGap();
+
                 updateObstacles(drawnBottomObstacle);
             }
 
