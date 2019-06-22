@@ -3,8 +3,10 @@ const canvasSize = {
     canvasHeight: 400,
 };
 const foregroundHeight = canvasSize.canvasHeight / 10;
-let gravity = 1;
-let velocity = 5;
+const initialGravity = 1;
+let gravity = initialGravity;
+const initialVelocity = 4;
+let velocity = initialVelocity;
 let gameStarted = false;
 let distance = 0;
 
@@ -31,11 +33,11 @@ canvas.setAttribute('height', canvasSize.canvasHeight);
 hook.appendChild(canvas);
 const ctx = canvas.getContext('2d');
 
-// setInterval(() => {
-//     velocity += 1;
-//     // gravity += 1;
-//     horizontalGap -= 50;
-// }, 10000);
+setInterval(() => {
+    velocity += 0.25;
+    gravity += 0.1;
+    // horizontalGap -= 50;
+}, 13000);
 
 
 const randomProperty = (obj) => {
@@ -170,23 +172,22 @@ let obstacles = [];
 let horizontalGap = generateHorizontalGap();
 
 generateTopObstacleYPosition = (bottomObstacleHeight) => {
-  return Math.round(Math.random() * (canvasSize.canvasHeight - bottomObstacleHeight - foregroundHeight));
+    return Math.round(Math.random() * (canvasSize.canvasHeight - bottomObstacleHeight - foregroundHeight - planeSize.height));
 };
 
 generateTopObstacleXPosition = () => {
-    return Math.round(Math.random() * ((canvasSize.canvasWidth) - (canvasSize.canvasWidth - canvasSize.canvasWidth / 10) ) + canvasSize.canvasWidth - canvasSize.canvasWidth / 10);
+    return Math.round(Math.random() * ((canvasSize.canvasWidth) - (canvasSize.canvasWidth - canvasSize.canvasWidth / 5)) + canvasSize.canvasWidth - canvasSize.canvasWidth / 5);
 };
 
-clearObstacles = () => {
-    obstacles = [];
-    const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
+updateObstacles = (randomBottomObstacle) => {
+
     obstacles.push({
-        x: generateTopObstacleXPosition(),
-        y: canvasSize.canvasHeight - randomInitBottomObstacle.height - foregroundHeight,
-        image: randomInitBottomObstacle
+        x: canvasSize.canvasWidth,
+        y: canvasSize.canvasHeight - randomBottomObstacle.height - foregroundHeight,
+        image: randomBottomObstacle
     });
     const randomInitTopObstacle = randomProperty(images.topObstacles);
-    const topObstacleYPosition = generateTopObstacleYPosition(randomInitBottomObstacle.height);
+    const topObstacleYPosition = generateTopObstacleYPosition(randomBottomObstacle.height);
     const topObstacleXPosition = generateTopObstacleXPosition();
 
     obstacles.push({
@@ -197,7 +198,7 @@ clearObstacles = () => {
 };
 
 moveUp = () => {
-    planePosition.y -= 30;
+    planePosition.y -= gravity * 30;
 };
 
 document.addEventListener('keyup', (key) => {
@@ -217,12 +218,15 @@ addStartListener = () => {
 };
 
 startGame = (key) => {
-
     if (key.keyCode === 32) {
-            clearObstacles();
-            resetPlanePosition();
-            gameStarted = true;
-            distance = 0;
+        obstacles = [];
+        const randomInitBottomObstacle = randomProperty(images.bottomObstacles);
+        updateObstacles(randomInitBottomObstacle);
+        resetPlanePosition();
+        gameStarted = true;
+        distance = 0;
+        velocity = initialVelocity;
+        gravity = initialGravity;
     }
     document.removeEventListener('keyup', startGame, false);
 };
@@ -252,7 +256,7 @@ draw = () => {
             obstacles[i].x -= velocity;
 
 
-            const bottomObstacles = obstacles.filter( (obs) => {
+            const bottomObstacles = obstacles.filter((obs) => {
                 return obs.image.type === "bottom";
             });
             const lastBottomObstacle = bottomObstacles[bottomObstacles.length - 1];
@@ -260,23 +264,10 @@ draw = () => {
             if (lastBottomObstacle.x <= horizontalGap + velocity && lastBottomObstacle.x >= horizontalGap - velocity) {
                 const tallInitHeight = randomHeight();
                 const drawnBottomObstacle = randomProperty(images.bottomObstacles);
+                drawnBottomObstacle.height = tallInitHeight;
 
                 horizontalGap = generateHorizontalGap();
-
-                drawnBottomObstacle.height = tallInitHeight;
-                obstacles.push({
-                    x: canvasSize.canvasWidth,
-                    y: canvasSize.canvasHeight - tallInitHeight - foregroundHeight,
-                    image: drawnBottomObstacle
-                });
-
-                const drawnTopObstacle= randomProperty(images.topObstacles);
-                const topObstacleYPosition = generateTopObstacleYPosition(drawnBottomObstacle.height);
-                obstacles.push({
-                    x: generateTopObstacleXPosition(),
-                    y: topObstacleYPosition,
-                    image: drawnTopObstacle
-                });
+                updateObstacles(drawnBottomObstacle);
             }
 
             // delete old obstacles
