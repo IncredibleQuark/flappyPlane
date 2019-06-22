@@ -3,5 +3,7 @@ canvas {
 }
 
 html, body {
+    padding: 0;
+    margin: 0;
     background-color: #22243b;
 }

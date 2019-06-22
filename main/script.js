@@ -1,6 +1,6 @@
 const canvasSize = {
-    canvasWidth: 800,
-    canvasHeight: 400,
+    canvasWidth: window.innerWidth < 800 ? window.innerWidth : 800,
+    canvasHeight: window.innerHeight < 600 ? window.innerHeight : 400,
 };
 
 const foregroundHeight = canvasSize.canvasHeight / 10;
